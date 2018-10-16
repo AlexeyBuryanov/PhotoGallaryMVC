@@ -1,0 +1,63 @@
+﻿@using PhotoGallaryMVC.Models
+@model IEnumerable<Picture>
+
+@{
+    ViewBag.Title = "Главная";
+    // Счётчик ячеек
+    var countCells = 0;
+}
+
+<div class="jumbotron">
+    <h1>Фото-галерея</h1>
+    <p class="lead">
+        <br />Добро пожаловать! <br />Можете загружать и удалять картинки.<br /><br />
+    </p>
+    <p>
+        @using (Html.BeginForm("Upload", "Home", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+            <input type="file" name="uploads" multiple="multiple" /><br />
+            <button class="btn btn-primary btn-lg" type="submit">
+                <span class="glyphicon glyphicon-plus"></span>&nbsp;Загрузить картинки
+            </button><br />
+            <div class="text-success">@ViewBag.UploadStatus</div>
+        }
+    </p>
+</div>
+
+<div id="gallary">
+    @foreach (var pic in Model) {
+        // Если ячеек 0 - новая строка
+        if (countCells == 0) {
+            @:<div class="row">
+        } // if
+
+        // Формируем ячейку
+        <div class="col-md-4">
+            <div class="cell">
+                <a href="@pic.Url" target="_blank">
+                    <img src="@pic.Url"
+                         class="pic"
+                         alt="@pic.Name" />
+                </a><br />
+                <label><b>@pic.Name</b></label><br />
+                <label>@pic.Size</label><br />
+                <label>@pic.Resolution</label><br />
+                <label>@pic.DateDownload</label><br />
+                <button class="btn btn-danger"
+                        onclick="@("window.location.href='" +
+                                   Url.Action("Delete", "Home", new {
+                                       path = pic.FullPath
+                                   }) + "'");">
+                    <span class="glyphicon glyphicon-remove"></span>&nbsp;Удалить
+                </button><br /><br /><br />
+            </div>
+        </div>
+
+        countCells++;
+
+        // Если ячеек 3 - закрываем строку, сбрасываем счётчик ячеек
+        if (countCells == 3) {
+            @:</div>
+            countCells = 0;
+        } // if
+    }
+</div>
